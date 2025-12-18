@@ -1,10 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>TITLE</title>
-    </head>
-    <body>
+<html>
+<head>
+    <title>Bangalore House Price Predictor</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        /* 1. The Background & Vibe */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Helvetica', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        /* 2. The Glass Card Container */
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+            color: white;
+        }
+
+        h2 { margin-bottom: 30px; letter-spacing: 1px; }
+
+        /* 3. Input Fields Styling */
+        .form-group { margin-bottom: 20px; text-align: left; }
         
-    </body>
+        label { font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; color: #f0f0f0; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            box-sizing: border-box; /* Fixes padding issues */
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 4. The Button */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff4b1f; /* Orange accent */
+            background: -webkit-linear-gradient(to right, #ff9068, #ff4b1f);
+            background: linear-gradient(to right, #ff9068, #ff4b1f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover { transform: scale(1.05); }
+
+        /* 5. The Result Text */
+        #uiEstimatedPrice {
+            margin-top: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            display: none; /* Hidden until result comes */
+        }
+    </style>
+    
+    <script>
+        // 1. Load Locations on Page Load
+        function onPageLoad() {
+            var url = "http://127.0.0.1:5000/get_location_names";
+            $.get(url, function(data, status) {
+                if(data) {
+                    var locations = data.locations;
+                    var uiLocations = document.getElementById("uiLocations");
+                    $('#uiLocations').empty();
+                    for(var i in locations) {
+                        var opt = new Option(locations[i]);
+                        $('#uiLocations').append(opt);
+                    }
+                }
+            });
+        }
+
+        // 2. Handle Button Click
+        function onClickedEstimatePrice() {
+            var sqft = document.getElementById("uiSqft");
+            var bhk = document.getElementById("uiBHK");
+            var bathrooms = document.getElementById("uiBathrooms");
+            var location = document.getElementById("uiLocations");
+            var estPrice = document.getElementById("uiEstimatedPrice");
+
+            var url = "http://127.0.0.1:5000/predict_home_price";
+
+            $.post(url, {
+                total_sqft: parseFloat(sqft.value),
+                bhk: bhk.value,
+                bath: bathrooms.value,
+                location: location.value
+            },function(data, status) {
+                estPrice.innerHTML = "₹ " + data.estimated_price.toString() + " Lakhs";
+                estPrice.style.display = "block"; // Show the result
+            });
+        }
+
+        window.onload = onPageLoad;
+    </script>
+</head>
+<body>
+
+<div class="card">
+    <h2>🏠 House Price AI</h2>
+    
+    <div class="form-group">
+        <label>Area (Square Feet)</label>
+        <input type="number" id="uiSqft" class="floatLabel" name="Squareft" value="1000">
+    </div>
+
+    <div class="form-group">
+        <label>BHK (Bedrooms)</label>
+        <select id="uiBHK">
+            <option value="1">1 BHK</option>
+            <option value="2" selected>2 BHK</option>
+            <option value="3">3 BHK</option>
+            <option value="4">4 BHK</option>
+            <option value="5">5 BHK</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Bathrooms</label>
+        <select id="uiBathrooms">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Location</label>
+        <select id="uiLocations">
+            <option value="" disabled selected>Choose a Location</option>
+            </select>
+    </div>
+
+    <button class="submit-btn" onclick="onClickedEstimatePrice()" type="button">Estimate Price</button>
+    
+    <div id="uiEstimatedPrice"></div>
+</div>
+
+</body>
 </html>
