@@ -6,12 +6,15 @@ The application features a Python Flask backend and a modern, responsive fronten
 ## Model Performance & Methodology
 Achieving high accuracy on real-world housing data is difficult due to outliers and non-linear pricing (e.g., luxury properties). I experimented with multiple algorithms before finding the best working model.
 
-Model,Accuracy (R2 Score),Status
-Linear Regression,71.36%,Baseline
-Lasso Regression (L1),70.58%,Underfitting
-Random Forest,77.54%,Good
-Voting Regressor (Ensemble),77.69%,Better
-CatBoost + Log Transform,86.27%,🏆 Champion
+| Model                          | Accuracy (R² Score) | Status         |
+|--------------------------------|---------------------|--------------- |
+| Linear Regression              | 71.36%              | Baseline       |
+| Lasso Regression (L1)          | 70.58%              | Underfitting   |
+| Ridge Regression               | 71.36%              | Not much change|
+| Random Forest                  | 77.54%              | Good           |
+| Voting Regressor (Ensemble)    | 77.69%              | Better         |
+| CatBoost + Log Transform       | 86.27%              | Champion       |
+
 
 ### Data Engineering:
 Handled missing values and inconsistent area units (ranges vs exact numbers).
@@ -35,3 +38,10 @@ Frontend: HTML5, CSS3 (Glassmorphism), JavaScript (jQuery)
 IDE: VS Code
 
 Frontend built with HTML/CSS/JavaScript (jQuery) for real-time interaction.
+
+# How to Run Locally:
+1. Clone the repository (or download the files): git clone https://github.com/your-username/Bangalore-House-Price-Predictor.git
+cd Bangalore-House-Price-Predictor
+2. Install Dependencies: pip install flask scikit-learn pandas numpy catboost
+3. Run the Server: python app.py
+4. Access the App: Open your browser and go to: http://127.0.0.1:5000
